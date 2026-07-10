@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>جرد الكافيه اليومي</title>
+<meta name="theme-color" content="#6F4E37">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== الهيدر ===== -->
+<header class="app-header">
+  <div class="header-top">
+    <div class="brand">
+      <span class="brand-icon">☕</span>
+      <div class="brand-text">
+        <h1>جرد الكافيه</h1>
+        <p id="todayDate" class="brand-sub">--</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="statsBtn" title="الإحصائيات" aria-label="الإحصائيات">
+        <svg viewBox="0 0 24 24"><path d="M5 21V10M12 21V3M19 21v-7"/></svg>
+      </button>
+      <button class="icon-btn" id="historyBtn" title="سجل الأيام" aria-label="سجل الأيام">
+        <svg viewBox="0 0 24 24"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <span class="stat-cup">☕<span class="steam s1"></span><span class="steam s2"></span></span>
+      <div>
+        <span class="stat-value" id="totalOrders">0</span>
+        <span class="stat-label">إجمالي الطلبات</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-cup">🧾</span>
+      <div>
+        <span class="stat-value" id="totalUnique">0</span>
+        <span class="stat-label">منتجات مختلفة</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="ابحث عن منتج...">
+  </div>
+</header>
+
+<!-- ===== المحتوى الرئيسي ===== -->
+<main id="productsContainer" class="products-container"></main>
+
+<p id="noResults" class="no-results hidden">لا توجد نتائج مطابقة لبحثك 🔍</p>
+
+<!-- ===== شريط سفلي ===== -->
+<div class="bottom-bar">
+  <button class="secondary-btn" id="resetAllBtn">
+    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+    تصفير الكل
+  </button>
+  <button class="primary-btn end-day-btn" id="endDayBtn">
+    <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+    إنهاء اليوم
+  </button>
+</div>
+
+<!-- ===== نافذة الإحصائيات ===== -->
+<div class="modal-overlay hidden" id="statsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📊 الإحصائيات</h2>
+      <button class="close-btn" data-close="statsModal">✕</button>
+    </div>
+    <div class="modal-body" id="statsBody"></div>
+  </div>
+</div>
+
+<!-- ===== نافذة سجل الأيام ===== -->
+<div class="modal-overlay hidden" id="historyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🗓️ سجل الأيام</h2>
+      <button class="close-btn" data-close="historyModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <button class="danger-link" id="deleteAllReportsBtn">حذف جميع التقارير</button>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== نافذة التقرير التفصيلي ===== -->
+<div class="modal-overlay hidden" id="reportModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="reportTitle">تقرير اليوم</h2>
+      <button class="close-btn" data-close="reportModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="report-summary" id="reportSummary"></div>
+      <div class="report-table-wrap">
+        <table class="report-table" id="reportTable">
+          <thead>
+            <tr><th>المنتج</th><th>عدد الطلبات</th></tr>
+          </thead>
+          <tbody id="reportTableBody"></tbody>
+        </table>
+      </div>
+      <button class="danger-btn full-width" id="deleteThisReportBtn">حذف هذا التقرير</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== نافذة تأكيد عامة ===== -->
+<div class="modal-overlay hidden" id="confirmModal">
+  <div class="modal small">
+    <div class="modal-header">
+      <h2 id="confirmTitle">تأكيد</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button class="secondary-btn" id="confirmCancelBtn">إلغاء</button>
+        <button class="danger-btn" id="confirmOkBtn">تأكيد</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
